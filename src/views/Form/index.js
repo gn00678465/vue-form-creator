@@ -6,9 +6,7 @@ export default {
   data () {
     return {
       fApi: {},
-      value: {
-        name: ''
-      },
+      value: {},
       options: {},
       rule: []
     }

@@ -16,19 +16,37 @@ function dropHidden (array) {
   return array.filter((item) => !item.hidden)
 }
 
-const findField = (arr, name) => {
+function randomStr (num) {
+  return Math.random().toString(36).substring(2, num + 2)
+}
+
+const findField = (arr, fn) => {
   let result
   function iter (a) {
-    if (a.field === name) {
+    if (fn(a)) {
       result = a
       return true
     }
     return isArray(a.children) && a.children.some(iter)
   };
-
   arr.some(iter)
   return result
 }
+
+const initFormData = (rule, fn) => {
+  function iter (arr) {
+    arr.forEach((a) => {
+      if ('field' in a) {
+        fn(a)
+        return true
+      }
+      return isArray(a.children) && iter(a.children)
+    })
+  }
+  iter(rule)
+}
+
+const serialize = (obj) => JSON.stringify(obj)
 
 export {
   computeOr,
@@ -37,5 +55,8 @@ export {
   dropHidden,
   isObject,
   isFunction,
-  findField
+  findField,
+  randomStr,
+  initFormData,
+  serialize
 }

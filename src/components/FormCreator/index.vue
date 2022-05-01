@@ -1,5 +1,5 @@
 <script>
-import { computeOr, isFunction, findField } from './utils/utils'
+import { computeOr, isFunction, findField, serialize } from './utils/utils'
 import { mergeDeepRight } from './utils/mergeDeep'
 import { renderContent, renderFormBtn } from './components/Render'
 
@@ -11,7 +11,7 @@ export default {
     }
   },
   props: {
-    options: {
+    option: {
       type: Object,
       default: () => ({})
     },
@@ -30,27 +30,22 @@ export default {
   },
   data () {
     return {
-      isCreated: false,
       formData: {},
-      renderRule: this.rule
+      renderRule: this.rule,
+      updateValue: ''
     }
   },
   watch: {
     formData: {
       deep: true,
       handler (newValue) {
+        this.updateValue = serialize(newValue)
         this.onEmitFormData(newValue)
       }
     }
   },
-  created () {
-    this.isCreated = true
-    Object.entries(this.value).forEach(([key, value]) => {
-      this.$set(this.formData, key, value)
-    })
-  },
+  created () {},
   mounted () {
-    this.isCreated = false
     this.onEmitAPI()
   },
   methods: {
@@ -78,7 +73,7 @@ export default {
       return (filed) => (filed in form && form[filed]) || null
     },
     mergeRules (name, mergeObj) {
-      const res = findField(this.renderRule, name)
+      const res = findField(this.renderRule, (a) => a.filed === name)
       res && mergeDeepRight(res, mergeObj)
     },
     onEmitAPI () {
@@ -91,7 +86,7 @@ export default {
     }
   },
   render (createElement) {
-    const formProps = computeOr({}, 'form')(this.options)
+    const formProps = computeOr({}, 'form')(this.option)
 
     return createElement('Form', {
       props: {
@@ -110,7 +105,7 @@ export default {
         }
       }, [
         renderContent.call(this, this.renderRule)(createElement),
-        renderFormBtn.call(this, this.options)(createElement)
+        renderFormBtn.call(this, this.option)(createElement)
       ])
     ])
   }

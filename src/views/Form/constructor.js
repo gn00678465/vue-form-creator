@@ -3,11 +3,15 @@ const options = {
     'label-width': 125,
     'label-position': 'left'
   },
-  submitBtn: false,
-  resetBtn: false
-  // onSubmit: function (formData) {
-  //   alert(JSON.stringify(formData));
-  // }
+  submitBtn: {
+    props: {
+      type: 'primary'
+    }
+  },
+  resetBtn: false,
+  onSubmit: function (formData) {
+    alert(JSON.stringify(formData))
+  }
 }
 
 const rule = [
@@ -92,6 +96,7 @@ const rule = [
             props: {
               min: 1
             },
+            value: 1,
             validate: [
               {
                 trigger: 'blur',

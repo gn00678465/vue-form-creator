@@ -1,5 +1,6 @@
 import WrapRadio from './WrapRadio'
-import { computeOr, confirmObj, isDisplay, dropHidden, isObject } from '../utils/utils'
+import { $set } from '../utils/modify'
+import { computeOr, confirmObj, isDisplay, dropHidden, isObject, randomStr } from '../utils/utils'
 import { isRow, isGroup, isSpan } from '../utils/type'
 
 const map = {
@@ -7,12 +8,20 @@ const map = {
     const props = computeOr({}, 'props')(config)
     const field = config.field
     return h(WrapRadio, {
-      props: { ...props, formInject: config, value: this.formData[field] },
+      props: { ...props, formInject: config, value: this.formData[field], field },
       on: { 'on-change': (val) => { this.formData[field] = val } }
     })
   },
   span: (h, config) => renderSpan(config)(h),
   default (h, config) { return renderInput.call(this, config)(h) }
+}
+
+function setField (config) {
+  const field = config.field
+  const value = computeOr(undefined, 'value')(config)
+  if (field && !(field in this.formData)) {
+    $set(this.formData, field, value)
+  }
 }
 
 const LabelWrap = (config) => {
@@ -51,13 +60,13 @@ function renderRow (config) {
 }
 
 function renderFormItem (config) {
-  // eslint-disable-next-line no-unused-vars
   const props = computeOr({}, 'props')(config)
   const validate = computeOr([], 'validate')(config)
   const col = computeOr(null, 'col')(config)
   const colProp = col && ((isObject(col) && col) || (typeof col === 'number' && { span: Number(col) }))
   const Type = config.type
   const itemStyle = { display: (!isDisplay(config) && 'none') || '' }
+  setField.call(this, config)
   return (h) => (col && h('Col', { props: colProp, style: { ...itemStyle } }, [
     h('FormItem', { props: { prop: config.field, rules: validate } }, [
       h('template', { slot: 'label' }, [h(LabelWrap(config))]),
@@ -72,7 +81,7 @@ function renderFormItem (config) {
 
 function renderInput (config) {
   const Type = config.type
-  const field = config.field
+  const field = computeOr(randomStr(8), 'field')(config)
   const props = computeOr({}, 'props')(config)
   return (h) => h(Type, {
     props: {
@@ -84,7 +93,8 @@ function renderInput (config) {
         if (typeof val === 'string') this.formData[field] = val.trim()
         this.formData[field] = val
       }
-    }
+    },
+    ref: field
   })
 }
 

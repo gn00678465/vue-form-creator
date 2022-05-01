@@ -22,8 +22,11 @@ export default {
       },
       deep: true
     },
-    value () {
-      this.update()
+    value: {
+      immediate: true,
+      handler () {
+        this.update()
+      }
     }
   },
   data () {
