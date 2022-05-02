@@ -5,14 +5,7 @@ import { isRow, isGroup, isSpan } from '../../utils/type'
 import { renderSlots } from './Slots'
 
 const map = {
-  Radio (h, config) {
-    const { props } = useComponent(config)
-    const field = config.field
-    return h(WrapRadio, {
-      props: { ...props, formInject: config, value: this.formData[field], field },
-      on: { 'on-change': (val) => { this.formData[field] = val } }
-    })
-  },
+  Radio (h, config) { return renderRadio.call(this, config)(h) },
   span: (h, config) => renderSpan(config)(h),
   default (h, config) { return renderInput.call(this, config)(h) }
 }
@@ -77,6 +70,15 @@ function renderFormItem (config) {
     h('template', { slot: 'label' }, [h(LabelWrap(config))]),
     map[Type] ? map[Type].call(this, h, config) : map.default.call(this, h, config)
   ])
+}
+
+function renderRadio (config) {
+  const { props } = useComponent(config)
+  const field = config.field
+  return h => h(WrapRadio, {
+    props: { ...props, formInject: config, value: this.formData[field], field },
+    on: { 'on-change': (val) => { this.formData[field] = val } }
+  })
 }
 
 function renderInput (config) {
