@@ -1,7 +1,7 @@
 <script>
 import { computeOr, isFunction, findField, serialize } from './utils/utils'
 import { mergeDeepRight } from './utils/mergeDeep'
-import { renderContent, renderFormBtn } from './components/Render'
+import { renderContent, renderFormBtn } from './components/Render/Render'
 
 export default {
   name: 'CreateForm',
@@ -100,9 +100,7 @@ export default {
       ref: 'form'
     }, [
       createElement('Row', {
-        props: {
-          'class-name': 'block'
-        }
+        class: 'block'
       }, [
         renderContent.call(this, this.renderRule)(createElement),
         renderFormBtn.call(this, this.option)(createElement)
@@ -117,6 +115,10 @@ export default {
   display: block;
 }
 
+.flex-column {
+  flex-direction: column;
+}
+
 .mb-0 {
   margin-bottom: 0;
 }
@@ -127,5 +129,9 @@ export default {
       margin-right: 0.25rem;
     }
   }
+}
+
+/deep/.ivu-form-item .ivu-form-item-content {
+  text-align: left;
 }
 </style>

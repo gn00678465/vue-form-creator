@@ -2,22 +2,36 @@ import { isObject, isFunction, isArray } from './type'
 
 function computeOr (orVal, key) {
   return (obj) => {
-    return (Object.keys(obj).length !== 0 && key in obj && obj[key]) || orVal
+    return (isObject(obj) && key in obj && obj[key]) || orVal
   }
 }
 
-function confirmObj (obj) {
-  return obj && isObject(obj)
+function confirmObj (obj) { return obj && isObject(obj) }
+
+function isDisplay (item) {
+  if (isObject(item)) {
+    return 'display' in item ? item.display : true
+  }
+  return true
 }
 
-function isDisplay (item) { return item.display }
-
 function dropHidden (array) {
-  return array.filter((item) => !item.hidden)
+  return array.filter((item) => !('hidden' in item && item.hidden))
 }
 
 function randomStr (num) {
   return Math.random().toString(36).substring(2, num + 2)
+}
+
+function useComponent (config) {
+  const props = computeOr({}, 'props')(config)
+  const slot = computeOr(null, 'slot')(config)
+  const className = computeOr('', 'class')(config)
+  const style = {
+    ...computeOr({}, 'style')(config),
+    display: (!isDisplay(config) && 'none') || ''
+  }
+  return { props, slot, className, style }
 }
 
 const findField = (arr, fn) => {
@@ -58,5 +72,6 @@ export {
   findField,
   randomStr,
   initFormData,
-  serialize
+  serialize,
+  useComponent
 }

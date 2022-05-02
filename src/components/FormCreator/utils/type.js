@@ -42,6 +42,25 @@ export function assertPromise (promise) {
   return isFunction(promise.then)
 }
 
+class Type extends Map {
+  getType (key) {
+    return (this.has(key) && this.get(key)) || key
+  }
+
+  is (key) {
+    return this.has(key)
+  }
+}
+
+const renderType = new Type([
+  ['i', 'i'],
+  ['icon', 'Icon'],
+  ['span', 'Span'],
+  ['row', 'Row'],
+  ['col', 'Col'],
+  ['group', 'Group']
+])
+
 function is (type) {
   return (item) => {
     return isObject(item) && 'type' in item && item.type === type
@@ -53,4 +72,4 @@ const isCol = is('Col')
 const isGroup = is('Group')
 const isSpan = is('Span')
 
-export { is, isRow, isCol, isGroup, isSpan }
+export { is, isRow, isCol, isGroup, isSpan, renderType }

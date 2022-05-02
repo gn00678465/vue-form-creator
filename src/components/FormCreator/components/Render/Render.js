@@ -1,11 +1,12 @@
-import WrapRadio from './WrapRadio'
-import { $set } from '../utils/modify'
-import { computeOr, confirmObj, isDisplay, dropHidden, isObject, randomStr } from '../utils/utils'
-import { isRow, isGroup, isSpan } from '../utils/type'
+import WrapRadio from '../WrapRadio'
+import { $set } from '../../utils/modify'
+import { computeOr, confirmObj, isDisplay, dropHidden, isObject, randomStr, useComponent } from '../../utils/utils'
+import { isRow, isGroup, isSpan } from '../../utils/type'
+import { renderSlots } from './Slots'
 
 const map = {
   Radio (h, config) {
-    const props = computeOr({}, 'props')(config)
+    const { props } = useComponent(config)
     const field = config.field
     return h(WrapRadio, {
       props: { ...props, formInject: config, value: this.formData[field], field },
@@ -60,20 +61,19 @@ function renderRow (config) {
 }
 
 function renderFormItem (config) {
-  const props = computeOr({}, 'props')(config)
+  const Type = config.type
+  const { props, style } = useComponent(config)
   const validate = computeOr([], 'validate')(config)
   const col = computeOr(null, 'col')(config)
   const colProp = col && ((isObject(col) && col) || (typeof col === 'number' && { span: Number(col) }))
-  const Type = config.type
-  const itemStyle = { display: (!isDisplay(config) && 'none') || '' }
   setField.call(this, config)
-  return (h) => (col && h('Col', { props: colProp, style: { ...itemStyle } }, [
+  return (h) => (col && h('Col', { props: colProp, style }, [
     h('FormItem', { props: { prop: config.field, rules: validate } }, [
       h('template', { slot: 'label' }, [h(LabelWrap(config))]),
       map[Type] ? map[Type].call(this, h, config) : map.default.call(this, h, config)
     ])
   ])) ||
-  h('FormItem', { props: { prop: config.field, rules: validate }, style: { ...itemStyle } }, [
+  h('FormItem', { props: { prop: config.field, rules: validate }, style }, [
     h('template', { slot: 'label' }, [h(LabelWrap(config))]),
     map[Type] ? map[Type].call(this, h, config) : map.default.call(this, h, config)
   ])
@@ -82,7 +82,7 @@ function renderFormItem (config) {
 function renderInput (config) {
   const Type = config.type
   const field = computeOr(randomStr(8), 'field')(config)
-  const props = computeOr({}, 'props')(config)
+  const { props } = useComponent(config)
   return (h) => h(Type, {
     props: {
       ...props,
@@ -95,7 +95,7 @@ function renderInput (config) {
       }
     },
     ref: field
-  })
+  }, renderSlots(config)(h))
 }
 
 function renderSpan (config) {

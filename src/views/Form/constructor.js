@@ -32,6 +32,22 @@ const rule = [
         type: 'string'
       }
     ],
+    children: [
+      {
+        type: 'icon',
+        props: {
+          type: 'ios-contact'
+        },
+        slot: 'prefix'
+      },
+      {
+        type: 'icon',
+        props: {
+          type: 'ios-search'
+        },
+        slot: 'suffix'
+      }
+    ],
     hidden: false,
     display: true
   },
@@ -124,6 +140,19 @@ const rule = [
     children: [],
     hidden: false,
     display: true
+  },
+  {
+    type: 'Button',
+    children: ['方式1']
+  },
+  {
+    type: 'Button',
+    children: [{
+      type: 'icon',
+      props: {
+        type: 'md-add'
+      }
+    }, ' 方式2']
   }
 ]
 
